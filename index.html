@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Talk! ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --card-1: #FF6B6B;
+    --card-2: #FFB347;
+    --card-3: #4ECDC4;
+    --card-4: #A78BFA;
+    --card-5: #F472B6;
+    --card-6: #34D399;
+    --bg: #FFF8F0;
+    --text-dark: #2D1B69;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 16px 40px;
+    overflow-x: hidden;
+  }
+
+  /* floating blobs bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, #FFE0E0 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 90% 80%, #E0F7F4 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 70% 10%, #EDE0FF 0%, transparent 60%);
+    z-index: -1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.1;
+  }
+
+  h1 span {
+    display: inline-block;
+    animation: wobble 3s ease-in-out infinite;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #7C6D9B;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* category filter */
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+    max-width: 600px;
+  }
+
+  .cat-btn {
+    border: none;
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+    color: white;
+  }
+
+  .cat-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(0,0,0,0.15); }
+  .cat-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
+
+  .cat-btn.active { outline: 3px solid var(--text-dark); outline-offset: 2px; }
+
+  /* main card area */
+  .card-scene {
+    perspective: 1000px;
+    width: min(340px, 90vw);
+    height: 280px;
+    margin: 0 auto 28px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-inner.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 4px 0 rgba(0,0,0,0.1);
+  }
+
+  .card-front {
+    background: white;
+    border: 4px solid #E2D9F3;
+  }
+
+  .card-front-emoji {
+    font-size: 4rem;
+    margin-bottom: 14px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .card-front-text {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .card-front-hint {
+    font-size: 0.8rem;
+    color: #9B8AC4;
+    margin-top: 8px;
+    font-weight: 700;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .card-back .cat-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.12);
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+
+  .card-back .question {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.3;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .card-back .card-emoji {
+    font-size: 2.2rem;
+  }
+
+  /* buttons */
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 400px;
+    margin-bottom: 32px;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 100px;
+    padding: 12px 28px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(0,0,0,0.2); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+  .btn-next { background: var(--text-dark); color: white; }
+  .btn-flip { background: white; color: var(--text-dark); border: 3px solid var(--text-dark); }
+
+  /* card grid */
+  .grid-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  .mini-card {
+    border-radius: 18px;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .mini-card .mini-emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+
+  .mini-card:hover {
+    transform: translateY(-4px) rotate(1deg);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.12);
+  }
+
+  /* counter */
+  .counter {
+    font-size: 0.85rem;
+    color: #9B8AC4;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confetti-fall linear forwards;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Let's Talk! <span>🌟</span></h1>
+  <p class="subtitle">Pick a card and answer together!</p>
+</header>
+
+<div class="categories" id="categories"></div>
+
+<div class="card-scene" id="cardScene" onclick="flipCard()">
+  <div class="card-inner" id="cardInner">
+    <div class="card-face card-front">
+      <div class="card-front-emoji">🃏</div>
+      <div class="card-front-text">Tap to reveal!</div>
+      <div class="card-front-hint">👇 pick a card below or shuffle</div>
+    </div>
+    <div class="card-face card-back" id="cardBack">
+      <span class="cat-label" id="catLabel">–</span>
+      <div class="card-emoji" id="cardEmoji">🌈</div>
+      <div class="question" id="questionText">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-flip" onclick="flipCard()">👀 Flip</button>
+  <button class="btn btn-next" onclick="nextCard()">🎲 New Card</button>
+</div>
+
+<p class="counter" id="counter"></p>
+
+<p class="grid-title">All Questions 📋</p>
+<div class="cards-grid" id="cardsGrid"></div>
+
+<script>
+  const CARDS = [
+    // 🫂 Friends & Family
+    { q: "What do you like most about your best friend?", emoji: "🤝", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "If you could have dinner with anyone in the world, who would it be?", emoji: "🍽️", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's your favourite thing to do with Mum or Dad?", emoji: "❤️", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "Who makes you laugh the most?", emoji: "😂", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "If you had a new baby sibling, what would you name them?", emoji: "👶", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's the nicest thing a friend has ever done for you?", emoji: "🎁", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's the funniest thing that's ever happened with your family?", emoji: "🤣", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "If you could plan the perfect day out with your family, what would we do?", emoji: "🗺️", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's something kind you could do for someone this week?", emoji: "💛", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "Who is someone you look up to and why?", emoji: "⭐", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's the best thing about being in our family?", emoji: "🏡", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "If your best friend was feeling sad, what would you do?", emoji: "🫂", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's your favourite memory with a grandparent or relative?", emoji: "👴", cat: "Friends & Family", color: "#FF6B6B" },
+    { q: "What's something you and your friend both love doing?", emoji: "🎮", cat: "Friends & Family", color: "#FF6B6B" },
+
+    // 😊 Feelings
+    { q: "What makes you happy?", emoji: "😊", cat: "Feelings", color: "#FFB347" },
+    { q: "What makes you feel safe?", emoji: "🏠", cat: "Feelings", color: "#FFB347" },
+    { q: "What makes you feel brave?", emoji: "🦁", cat: "Feelings", color: "#FFB347" },
+    { q: "What do you do when you feel sad?", emoji: "😢", cat: "Feelings", color: "#FFB347" },
+    { q: "What's something that always cheers you up?", emoji: "🌈", cat: "Feelings", color: "#FFB347" },
+    { q: "What's something you're really proud of?", emoji: "🏆", cat: "Feelings", color: "#FFB347" },
+    { q: "What's something that used to scare you but doesn't anymore?", emoji: "👻", cat: "Feelings", color: "#FFB347" },
+    { q: "What does it feel like when you do something really kind for someone?", emoji: "💗", cat: "Feelings", color: "#FFB347" },
+    { q: "When do you feel most excited?", emoji: "🤩", cat: "Feelings", color: "#FFB347" },
+    { q: "What's something that makes you feel cosy?", emoji: "🧸", cat: "Feelings", color: "#FFB347" },
+    { q: "Has anyone ever made you feel really special? What did they do?", emoji: "✨", cat: "Feelings", color: "#FFB347" },
+    { q: "What do you do when you feel worried about something?", emoji: "😟", cat: "Feelings", color: "#FFB347" },
+    { q: "What's the happiest you've ever felt?", emoji: "🌟", cat: "Feelings", color: "#FFB347" },
+    { q: "Is there anything that makes you feel a little bit nervous?", emoji: "🦋", cat: "Feelings", color: "#FFB347" },
+    { q: "What makes you feel really loved?", emoji: "❤️", cat: "Feelings", color: "#FFB347" },
+
+    // 🌍 The World
+    { q: "What should we ban from the world?", emoji: "🚫", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could make one rule for everyone in the world, what would it be?", emoji: "📜", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could fly anywhere tomorrow, where would you go?", emoji: "✈️", cat: "The World", color: "#4ECDC4" },
+    { q: "What would you do if you were in charge of the whole world for a day?", emoji: "🌍", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could give everyone in the world one gift, what would it be?", emoji: "🎀", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could add one thing to every playground in the world, what would it be?", emoji: "🛝", cat: "The World", color: "#4ECDC4" },
+    { q: "What's one thing you think grown-ups should stop doing?", emoji: "🙅", cat: "The World", color: "#4ECDC4" },
+    { q: "If animals could vote for a new rule, what do you think they'd choose?", emoji: "🗳️", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could build a brand new city, what would be in it?", emoji: "🏙️", cat: "The World", color: "#4ECDC4" },
+    { q: "What's something you think everyone should do every day?", emoji: "☀️", cat: "The World", color: "#4ECDC4" },
+    { q: "If you could make it rain something other than water, what would it be?", emoji: "🌧️", cat: "The World", color: "#4ECDC4" },
+    { q: "What would you do first if you were President or Prime Minister for a day?", emoji: "👑", cat: "The World", color: "#4ECDC4" },
+
+    // 🦸 Pretend & Imagine
+    { q: "If you had a superpower, what would it be?", emoji: "🦸", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you were a dinosaur, which one would you be?", emoji: "🦕", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If your toys came to life at night, what do you think they'd do?", emoji: "🧸", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could shrink down tiny and live anywhere, where would you live?", emoji: "🐜", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could talk to animals, which animal would you call first?", emoji: "🐘", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could invent anything, what would you make?", emoji: "🔧", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you were a wizard, what spell would you learn first?", emoji: "🪄", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could swap lives with a character from a story for one day, who would you pick?", emoji: "📚", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could live inside any video game or cartoon world, which would it be?", emoji: "🎮", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you had a pet dragon, what would you call it and what would it eat?", emoji: "🐉", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could be invisible for one day, what would you do?", emoji: "👁️", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could teleport anywhere right now, where would you go?", emoji: "⚡", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you opened a shop, what would you sell?", emoji: "🏪", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could be any age other than yours, what age would you be?", emoji: "🎂", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could swap bodies with any animal for a week, which would you pick?", emoji: "🦊", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you discovered a secret door, where would you hope it led?", emoji: "🚪", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If you could design your dream bedroom, what would be in it?", emoji: "🛏️", cat: "Pretend & Imagine", color: "#A78BFA" },
+    { q: "If food could talk, which food do you think would be the loudest?", emoji: "🍔", cat: "Pretend & Imagine", color: "#A78BFA" },
+
+    // 🍕 Favourites
+    { q: "What's your all-time favourite meal?", emoji: "🍕", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite sound in the whole world?", emoji: "🔊", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite time of day?", emoji: "🌅", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite thing about school?", emoji: "🏫", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite word?", emoji: "💬", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite thing to dream about?", emoji: "💭", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite thing to do on a rainy day?", emoji: "🌧️", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite smell?", emoji: "👃", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite thing to wear?", emoji: "👕", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite season and why?", emoji: "🍂", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite animal and what do you love about it?", emoji: "🐼", cat: "Favourites", color: "#F472B6" },
+    { q: "What's the best gift you've ever received?", emoji: "🎁", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite thing to do just before bed?", emoji: "🌙", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite joke?", emoji: "😄", cat: "Favourites", color: "#F472B6" },
+    { q: "What's your favourite outdoor activity?", emoji: "🌳", cat: "Favourites", color: "#F472B6" },
+
+    // 🚀 Big Dreams
+    { q: "What do you want to be when you grow up?", emoji: "🚀", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's something you really want to learn?", emoji: "📖", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's the most important thing in life?", emoji: "⭐", cat: "Big Dreams", color: "#34D399" },
+    { q: "If you could learn any skill overnight, what would you pick?", emoji: "🎸", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's something you hope happens when you're bigger?", emoji: "🌟", cat: "Big Dreams", color: "#34D399" },
+    { q: "If you wrote a book, what would it be about?", emoji: "📝", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's something you want to get really, really good at?", emoji: "💪", cat: "Big Dreams", color: "#34D399" },
+    { q: "Where would you like to live when you grow up?", emoji: "🏘️", cat: "Big Dreams", color: "#34D399" },
+    { q: "What kind of grown-up do you want to be?", emoji: "🌱", cat: "Big Dreams", color: "#34D399" },
+    { q: "If you could change one thing about the world, what would it be?", emoji: "🌍", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's a challenge you'd like to try one day?", emoji: "🧗", cat: "Big Dreams", color: "#34D399" },
+    { q: "If you started a club, what would it be about?", emoji: "🏅", cat: "Big Dreams", color: "#34D399" },
+    { q: "What would you like to be famous for?", emoji: "🎤", cat: "Big Dreams", color: "#34D399" },
+    { q: "What's something you think you'll be brilliant at one day?", emoji: "✨", cat: "Big Dreams", color: "#34D399" },
+
+    // 🤪 Silly & Random
+    { q: "If you could only eat one food forever, what would it be?", emoji: "🍩", cat: "Silly & Random", color: "#FB923C" },
+    { q: "Would you rather have spaghetti for hair or broccoli for fingers?", emoji: "🍝", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If you could make up a brand new colour, what would you call it?", emoji: "🎨", cat: "Silly & Random", color: "#FB923C" },
+    { q: "What's the silliest word you can think of?", emoji: "🤪", cat: "Silly & Random", color: "#FB923C" },
+    { q: "Would you rather be able to fly or breathe underwater?", emoji: "🌊", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If you had a robot helper, what one job would you give it?", emoji: "🤖", cat: "Silly & Random", color: "#FB923C" },
+    { q: "What's the grossest thing you can imagine eating?", emoji: "🤢", cat: "Silly & Random", color: "#FB923C" },
+    { q: "Would you rather always have to hop everywhere or always walk backwards?", emoji: "🐰", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If your pet could talk, what do you think it would say first?", emoji: "🐶", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If you could swap one body part for an animal's, what would you pick?", emoji: "🦒", cat: "Silly & Random", color: "#FB923C" },
+    { q: "What would you call yourself if you had to pick a totally new name?", emoji: "🏷️", cat: "Silly & Random", color: "#FB923C" },
+    { q: "Would you rather be as big as a house or as small as a mouse?", emoji: "🏠", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If you could swap your laugh with any animal's sound, what would you pick?", emoji: "😂", cat: "Silly & Random", color: "#FB923C" },
+    { q: "What's the weirdest dream you've ever had?", emoji: "💤", cat: "Silly & Random", color: "#FB923C" },
+    { q: "If you could sneeze glitter, what colour would it be?", emoji: "✨", cat: "Silly & Random", color: "#FB923C" },
+  ];
+
+  const CATS = ["All", ...new Set(CARDS.map(c => c.cat))];
+  const CAT_COLORS = { All: "#2D1B69", "Friends & Family": "#FF6B6B", "Feelings": "#FFB347", "The World": "#4ECDC4", "Pretend & Imagine": "#A78BFA", "Favourites": "#F472B6", "Big Dreams": "#34D399", "Silly & Random": "#FB923C" };
+
+  let filtered = [...CARDS];
+  let currentIndex = 0;
+  let isFlipped = false;
+  let activeCategory = "All";
+
+  // Build categories
+  const catContainer = document.getElementById('categories');
+  CATS.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (cat === 'All' ? ' active' : '');
+    btn.textContent = cat === 'All' ? '🎲 All' : cat;
+    btn.style.background = CAT_COLORS[cat];
+    btn.onclick = () => setCategory(cat, btn);
+    catContainer.appendChild(btn);
+  });
+
+  function setCategory(cat, btn) {
+    activeCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filtered = cat === 'All' ? [...CARDS] : CARDS.filter(c => c.cat === cat);
+    shuffleArray(filtered);
+    currentIndex = 0;
+    isFlipped = false;
+    document.getElementById('cardInner').classList.remove('flipped');
+    loadCard(filtered[0]);
+    buildGrid();
+    updateCounter();
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function loadCard(card) {
+    const back = document.getElementById('cardBack');
+    back.style.background = card.color;
+    document.getElementById('catLabel').textContent = card.cat;
+    document.getElementById('cardEmoji').textContent = card.emoji;
+    document.getElementById('questionText').textContent = card.q;
+  }
+
+  function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('cardInner').classList.toggle('flipped', isFlipped);
+  }
+
+  function nextCard() {
+    currentIndex = (currentIndex + 1) % filtered.length;
+    isFlipped = false;
+    document.getElementById('cardInner').classList.remove('flipped');
+    setTimeout(() => {
+      loadCard(filtered[currentIndex]);
+      launchConfetti();
+    }, 100);
+    updateCounter();
+  }
+
+  function selectCard(index) {
+    currentIndex = index;
+    isFlipped = false;
+    document.getElementById('cardInner').classList.remove('flipped');
+    loadCard(filtered[index]);
+    updateCounter();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(flipCard, 400);
+  }
+
+  function updateCounter() {
+    document.getElementById('counter').textContent = `Card ${currentIndex + 1} of ${filtered.length}`;
+  }
+
+  function buildGrid() {
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+    filtered.forEach((card, i) => {
+      const el = document.createElement('div');
+      el.className = 'mini-card';
+      el.style.background = card.color;
+      el.innerHTML = `<span class="mini-emoji">${card.emoji}</span>${card.q}`;
+      el.onclick = () => selectCard(i);
+      grid.appendChild(el);
+    });
+  }
+
+  function launchConfetti() {
+    const colors = ['#FF6B6B','#FFB347','#4ECDC4','#A78BFA','#F472B6','#34D399','#FFF'];
+    for (let i = 0; i < 18; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.top = '-20px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      piece.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
+      piece.style.animationDelay = Math.random() * 0.4 + 's';
+      document.body.appendChild(piece);
+      piece.addEventListener('animationend', () => piece.remove());
+    }
+  }
+
+  // Init
+  shuffleArray(filtered);
+  loadCard(filtered[0]);
+  buildGrid();
+  updateCounter();
+</script>
+</body>
+</html>
